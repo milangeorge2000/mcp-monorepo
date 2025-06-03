@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcpbatt"
+version = "0.1.0"
+description = "A benchmark that writes its own benchmark. Author scenario templates; the engine expands them into a concrete battery tailored to a live server's actual schemas, runs it in a sandbox, and grades the server's schema fidelity, validation discipline, drift honesty, and robustness into an A-F report card."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "mcpbatt contributors" }]
+keywords = ["mcp", "agents", "benchmark", "evaluation", "generation", "model-context-protocol", "llm"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+]
+
+[project.urls]
+Homepage = "https://github.com/milangeorge2000/mcp-monorepo#mcpbatt"
+Issues = "https://github.com/milangeorge2000/mcp-monorepo/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+mcpbatt = "mcpbatt.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+mcpbatt = ["templates/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+asyncio_default_fixture_loop_scope = "function"
