@@ -1,0 +1,8 @@
+{
+  "name": "missing-required",
+  "description": "For each tool, omit each required field one at a time; expect -32602.",
+  "select": "*",
+  "mode": "missing",
+  "expect": "invalid",
+  "drift": null
+}

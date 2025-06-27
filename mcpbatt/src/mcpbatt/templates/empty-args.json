@@ -1,0 +1,8 @@
+{
+  "name": "empty-args",
+  "description": "Call every tool with no arguments at all.",
+  "select": "*",
+  "mode": "empty",
+  "expect": "any",
+  "drift": null
+}

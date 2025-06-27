@@ -1,0 +1,8 @@
+{
+  "name": "all-fields",
+  "description": "Call every tool with every declared field populated; expect success.",
+  "select": "*",
+  "mode": "all",
+  "expect": "ok",
+  "drift": null
+}

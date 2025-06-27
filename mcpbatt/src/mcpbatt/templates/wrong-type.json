@@ -1,0 +1,8 @@
+{
+  "name": "wrong-type",
+  "description": "For each field, send a value that violates its declared type; expect -32602.",
+  "select": "*",
+  "mode": "wrong-type",
+  "expect": "invalid",
+  "drift": null
+}

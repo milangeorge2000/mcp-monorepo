@@ -1,0 +1,11 @@
+{
+  "name": "drift-honesty",
+  "description": "Apply a schema mutation to the search tool mid-run, then verify list_changed, re-list reflection, and rejection of stale args.",
+  "select": "search",
+  "mode": "required",
+  "expect": "ok",
+  "drift": {
+    "tool": "search",
+    "add_required": ["locale"]
+  }
+}

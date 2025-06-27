@@ -1,0 +1,8 @@
+{
+  "name": "required-only",
+  "description": "Call every tool with exactly its required fields; expect success.",
+  "select": "*",
+  "mode": "required",
+  "expect": "ok",
+  "drift": null
+}

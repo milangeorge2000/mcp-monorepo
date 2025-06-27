@@ -1,0 +1,8 @@
+{
+  "name": "oversize",
+  "description": "Send oversized string values to every string field; expect graceful handling.",
+  "select": "*",
+  "mode": "oversize",
+  "expect": "ok",
+  "drift": null
+}
