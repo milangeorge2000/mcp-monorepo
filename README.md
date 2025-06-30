@@ -15,6 +15,7 @@ treats findings as **review triggers**, never verdicts.
 | **Security** | [`mcpguard/`](mcpguard/) | what can these servers touch — risky launchers, dangerous tools, credential env, known-bad packages? | report.html + hardened `mcp.json` |
 | **Red team** | [`mcphazard/`](mcphazard/) | what happens if a hostile prompt actually the tools/call — which payloads land, echo, or exfil? | pentest report.html |
 | **Client bench** | [`mcpbench/`](mcpbench/) | how do MCP clients behave — do they respect policy, stay on protocol, and re-list when the server drifts? | leaderboard report.html |
+| **Battery** | [`mcpbatt/`](mcpbatt/) | the benchmark that writes its own benchmark: scenario templates expand into concrete batteries tailored to a server's own schemas — does it honor what it advertises? | leaderboard report.html + generated battery |
 | **Data** | [`mcpcensus/`](mcpcensus/) | what does the MCP ecosystem really look like, measured on real devices? | State of MCP report + leaderboards |
 | **Accountability** | [`ledger/`](ledger/) | what did the agent actually do, in what order, at what cost? | incident dossier / Bill of Actions |
 | **Economics** | [`agentspense/`](agentspense/) | what do agents cost per team, per PR, per resolved issue? | monthly agent P&L |
@@ -31,6 +32,7 @@ mcpaudit                         # ...how much context is that costing?   -> con
 mcpguard scan                    # ...and what can it actually touch?     -> security scorecard
 mcphazard scan                   # ...and what does it do under attack?   -> red-team report
 mcpbench run                     # ...do the clients hold up their end?  -> client leaderboard
+mcpbatt run --template missing-required   # ...does the server honor its own schema? -> generated battery
 mcpaudit --share ~/.mcpcensus/ctx.json        # + mcpguard scan --share  -> you are a census sensor
 mcpguard scan --share ~/.mcpcensus/sec.json   # (names salted on the device)
 mcpcensus ingest ~/.mcpcensus/*.json          # monthly State-of-MCP dataset
@@ -48,6 +50,11 @@ worthless if every client misreads its policy, fumbles its args, or never
 notices the toolset changed. `mcpbench run` scores reference client profiles
 (conformance, policy, validity, token economy, drift handling) against a
 fixed, gated fleet.
+
+And once the workload itself is the bottleneck, stop authoring it by hand:
+`mcpbatt run` expands scenario templates into concrete batteries sampled from
+a server's own schemas, so the benchmark is *created* for that server, not
+copied from another one.
 
 ## House rules
 
@@ -68,6 +75,9 @@ pipx install mcpguard && mcpguard scan
 
 # client leaderboard (against the bundled reference fleet)
 pipx install mcpbench && mcpbench run
+
+# server battery (generated from the server's own schemas)
+pipx install mcpbatt && mcpbatt run --template missing-required
 
 # be a sensor
 mcpaudit --share ~/.mcpcensus/mcpaudit-census.json
@@ -95,6 +105,7 @@ mcp-monorepo/
 ├── mcpguard/     # security scorecard (launchers, capabilities, intel, hardened config)
 ├── mcphazard/    # red-team harness (actively fuzzes tools/call in a sandbox)
 ├── mcpbench/     # client benchmark (scores reference clients against a fixed fleet)
+├── mcpbatt/      # battery generator (scenario templates -> concrete, schema-tailored batteries)
 ├── mcpcensus/    # MCP Observatory (sensor registry, k-anonymity + LDP, State-of-MCP report)
 ├── ledger/       # action forensics (transcript -> trail, incident dossier, policy gate)
 ├── agentspense/  # cost intelligence (rate cards, provider normalization, agent P&L)
@@ -104,14 +115,15 @@ mcp-monorepo/
 ## The loop (one habit, six tools)
 
 ```
-audit → guard → hazard → bench → share → observe → record → gate → bill
-  1      2       3        4       5       6       7      8      9
+audit → guard → hazard → bench → batt → share → observe → record → gate → bill
+  1      2       3        4       5      6       7       8      9     10
 ```
 
 `mcpaudit`, `mcpguard`, and `mcphazard` scan; `mcpbench` benchmarks the
-clients; the first two's `--share` flags make you a census sensor; `mcpcensus`
-aggregates the anonymized stream; `ledger` tapes what the agent did and gates
-it; `agentspense` prices the month.
+clients; `mcpbatt` generates batteries from a server's own schemas; the first
+two's `--share` flags make you a census sensor; `mcpcensus` aggregates the
+anonymized stream; `ledger` tapes what the agent did and gates it;
+`agentspense` prices the month.
 
 ## Contributing
 

@@ -1,6 +1,6 @@
 # mcp-monorepo · roadmap & concepts
 
-The shipped axes (Context, Security, Red team, Client bench) solve
+The shipped axes (Context, Security, Red team, Client bench, Battery) solve
 point-in-time questions about a single machine. The concepts below escalate
 the suite in three directions: a **data network** (mcpcensus),
 **accountability** (ledger), and **economics** (agentspense). All inherit the
@@ -10,8 +10,9 @@ findings-as-review-triggers.
 **Status:** `mcpcensus/`, `ledger/`, `agentspense/` are implemented as
 first-class monorepo members — each with tests and a CLI. **mcphazard** ships
 too: an active red-team harness that fuzzes `tools/call` in a sandbox.
-**mcpbench** ships as the newest axis: a client benchmark. The table below
-marks the shipped surface and what remains "phase 2" of each concept.
+**mcpbench** ships as a client benchmark; **mcpbatt** ships as a battery
+generator. The table below marks the shipped surface and what remains
+"phase 2" of each concept.
 
 ---
 
@@ -77,6 +78,40 @@ network, and CLI subsetting (`--drivers naive,canonical`).
 **Phase 2.** Real-client adapters (run your actual client binary through the
 same battery), a drift corpus of real server change events, and regression
 tracking across client versions.
+
+---
+
+## mcpbatt — the battery generator *(benchmarks that write themselves)*
+
+**The problem.** Every benchmark in the ecosystem ships a hand-authored
+workload: a fixed list of calls written once against a schema guess. The
+moment a server's schemas change — or you point the tool at a different server
+— that corpus is stale. Authoring is the bottleneck and the source of drift.
+
+**The concept.** Make the benchmark *derived from the subject*. `mcpbatt` takes
+a tiny declarative **scenario template** ("call every tool with exactly its
+required fields", "omit each required field in turn", "violate every declared
+type", "mutate the schema mid-run and see who notices") and expands it into a
+fully-concrete battery against a live server's actual `tools/list` schemas.
+Every argument value is sampled from that server's own JSON Schema, so the
+probes are tailored per-server and per-deployment, never copied.
+
+**Sophistication.** `expand` prints the generated battery as a diffable,
+replayable JSON artifact — the benchmark is an output, not an input. A
+mid-run **drift** phase mutates the named tool via a private control method,
+confirms `tools/list_changed`, re-reads the toolset, and re-probes including a
+*stale* probe (pre-drift arguments) to catch servers that silently break their
+own contract.
+
+**Shipped (this repo).** `mcpbatt/`: template DSL + validation, pure expansion
+engine, bundled reference fleet with strict `-32602` validation and drift
+control, recording client, sandboxed runner, four-axis scoring (fidelity,
+discipline, stability, drift) into an A-F grade, HTML/JSON report, a `--share`
+fingerprint (`sensor=batt`), and a CLI (`run`, `expand`, `list`).
+
+**Phase 2.** A template registry contributed by the community, replay-corpus
+mode (run a saved battery verbatim, no re-expansion), and per-template drift
+regression tracking across server versions.
 
 ---
 
@@ -199,6 +234,7 @@ the budget.
 | 0 | `mcpaudit` / `mcpguard` shipped | — |
 | 0b | `mcphazard` red-team harness *(done)* | attack tested before you trust |
 | 0c | `mcpbench` client benchmark *(done)* | clients measured against the wire |
+| 0d | `mcpbatt` battery generator *(done)* | benchmarks write themselves |
 | 1 | `--share` sensors + registry + `mcpcensus` engine *(done)* | private beta |
 | 2 | first public *State of MCP* report | public dataset v1 |
 | 3 | `mcpcensus suggest` feedback loop *(done)* | sensor network self-feeds |
