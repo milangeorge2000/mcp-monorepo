@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcphazard"
+version = "0.1.0"
+description = "Red-team harness for MCP servers. Actively fuzzes every exposed tool with adversarial payloads (prompt injection, tool confusion, exfil, policy bypass) inside a throwaway sandbox and produces a pentest-style report."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "mcphazard contributors" }]
+keywords = ["mcp", "red-team", "penetration-testing", "prompt-injection", "model-context-protocol", "agents", "security"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.urls]
+Homepage = "https://github.com/milangeorge2000/mcp-monorepo#mcphazard"
+Issues = "https://github.com/milangeorge2000/mcp-monorepo/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+mcphazard = "mcphazard.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+asyncio_default_fixture_loop_scope = "function"
