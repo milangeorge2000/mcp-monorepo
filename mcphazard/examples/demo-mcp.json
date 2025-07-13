@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "toxic-demo": {
+      "command": "python",
+      "args": ["examples/fake_toxic_server.py", "toxic"]
+    }
+  }
+}
