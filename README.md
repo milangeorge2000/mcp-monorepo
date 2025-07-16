@@ -13,6 +13,7 @@ treats findings as **review triggers**, never verdicts.
 |---|---|---|---|
 | **Context** | [`mcpaudit/`](mcpaudit/) | how many tokens do my tool schemas burn per request, and which tools are dead? | report.html + slimmed `mcp.json` |
 | **Security** | [`mcpguard/`](mcpguard/) | what can these servers touch — risky launchers, dangerous tools, credential env, known-bad packages? | report.html + hardened `mcp.json` |
+| **Red team** | [`mcphazard/`](mcphazard/) | what happens if a hostile prompt actually the tools/call — which payloads land, echo, or exfil? | pentest report.html |
 | **Data** | [`mcpcensus/`](mcpcensus/) | what does the MCP ecosystem really look like, measured on real devices? | State of MCP report + leaderboards |
 | **Accountability** | [`ledger/`](ledger/) | what did the agent actually do, in what order, at what cost? | incident dossier / Bill of Actions |
 | **Economics** | [`agentspense/`](agentspense/) | what do agents cost per team, per PR, per resolved issue? | monthly agent P&L |
@@ -27,6 +28,7 @@ Full concept notes: [`docs/roadmap.md`](docs/roadmap.md).
 npx -y some-mcp-package          # you just ran remote code, unbounded
 mcpaudit                         # ...how much context is that costing?   -> context report card
 mcpguard scan                    # ...and what can it actually touch?     -> security scorecard
+mcphazard scan                   # ...and what does it do under attack?   -> red-team report
 mcpaudit --share ~/.mcpcensus/ctx.json        # + mcpguard scan --share  -> you are a census sensor
 mcpguard scan --share ~/.mcpcensus/sec.json   # (names salted on the device)
 mcpcensus ingest ~/.mcpcensus/*.json          # monthly State-of-MCP dataset
@@ -37,7 +39,7 @@ agentspense normalize export.csv              # what did that month actually cos
 
 Scorecards first, then the observatory, the forensics tape, and the money.
 Same habit throughout: **audit before you trust, guard before you scale,
-account for what ran.**
+hazard-test before you ship, account for what ran.**
 
 ## House rules
 
@@ -80,22 +82,24 @@ produce.
 mcp-monorepo/
 ├── mcpaudit/     # context report card (token waste, dead tools, slim config)
 ├── mcpguard/     # security scorecard (launchers, capabilities, intel, hardened config)
+├── mcphazard/    # red-team harness (actively fuzzes tools/call in a sandbox)
 ├── mcpcensus/    # MCP Observatory (sensor registry, k-anonymity + LDP, State-of-MCP report)
 ├── ledger/       # action forensics (transcript -> trail, incident dossier, policy gate)
 ├── agentspense/  # cost intelligence (rate cards, provider normalization, agent P&L)
 ├── LICENSE       # MIT, shared by all tools
 ```
 
-## The loop (all five tools, one habit)
+## The loop (one habit, six tools)
 
 ```
-audit → guard → share → observe → record → gate → bill
-  1     2       3        4        5       6      7
+audit → guard → hazard → share → observe → record → gate → bill
+  1      2       3        4        5       6      7      8
 ```
 
-`mcpaudit` and `mcpguard` scan; their `--share` flags make you a census
-sensor; `mcpcensus` aggregates the anonymized stream; `ledger` tapes what the
-agent did and gates it; `agentspense` prices the month.
+`mcpaudit`, `mcpguard`, and `mcphazard` scan; the first two's `--share` flags
+make you a census sensor; `mcpcensus` aggregates the anonymized stream;
+`ledger` tapes what the agent did and gates it; `agentspense` prices the
+month.
 
 ## Contributing
 

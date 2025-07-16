@@ -1,14 +1,49 @@
 # mcp-monorepo · roadmap & concepts
 
-The shipped axes (Context, Security) solve point-in-time questions about a
-single machine. The concepts below escalate the suite in three directions: a
-**data network** (mcpcensus), **accountability** (ledger), and **economics**
-(agentspense). All three inherit the house rules: plug-and-play, stdlib-only,
-deterministic, report-card artifacts, findings-as-review-triggers.
+The shipped axes (Context, Security, Red team) solve point-in-time questions
+about a single machine. The concepts below escalate the suite in three
+directions: a **data network** (mcpcensus), **accountability** (ledger), and
+**economics** (agentspense). All inherit the house rules: plug-and-play,
+stdlib-only, deterministic, report-card artifacts,
+findings-as-review-triggers.
 
-**Status:** all three are now implemented as first-class monorepo members —
-`mcpcensus/`, `ledger/`, `agentspense/` — each with tests and a CLI. The table
-below marks the shipped surface and what remains "phase 2" of each concept.
+**Status:** `mcpcensus/`, `ledger/`, `agentspense/` are implemented as
+first-class monorepo members — each with tests and a CLI. **mcphazard** ships
+too: an active red-team harness that fuzzes `tools/call` in a sandbox. The
+table below marks the shipped surface and what remains "phase 2" of each
+concept.
+
+---
+
+## mcphazard — the red-team harness *(hazard testing)*
+
+**The problem.** `mcpaudit` and `mcpguard` read the *surface* of a server —
+schemas, launchers, capabilities. Neither answers the question ops actually
+asks before a risky integration goes to prod: **what happens if this server is
+pushed?** A server can announce harmless tools and still be trivially
+promptable into echoing, leaking, or exfiltrating when handed adversarial
+input.
+
+**The concept.** Actively *call* `tools/call` with a battery of adversarial
+payloads — prompt injection, policy override, credential phish, argument
+smuggling, exfiltration-with-sink, shell-shaped output — inside a throwaway
+sandbox with a canary secret and inert egress. Deterministic signal detection
+(echo / exfil / policy-leak / shell-shape) turns each response into a finding
+and an A‑F posture without any LLM interpretation.
+
+**Safety model.** Sandbox-first by default: default payloads are
+inert-but-detective; weaponized payloads (real sink URLs, shell punctuation)
+require an explicit `--live`. Findings are review triggers, never verdicts —
+same house rule as the scanners.
+
+**Shipped (this repo).** `mcphazard/`: payload bundle, deterministic sandbox,
+stdlib MCP client that actually fires `tools/call`, signal analyzer,
+harness + pentest-style HTML/JSON report, a `--share` hazard fingerprint
+(`sensor=hazard`) for the census network, and a demo "toxic" MCP server.
+
+**Phase 2.** A conformance/canary corpus of known-real vulnerabilities, corpus
+regression tracking ("this newly shipped server still passes"), and hardware
+batching to cut scan wall-time.
 
 ---
 
@@ -129,6 +164,7 @@ the budget.
 | phase | deliverable | milestone |
 |---|---|---|
 | 0 | `mcpaudit` / `mcpguard` shipped | — |
+| 0b | `mcphazard` red-team harness *(done)* | attack tested before you trust |
 | 1 | `--share` sensors + registry + `mcpcensus` engine *(done)* | private beta |
 | 2 | first public *State of MCP* report | public dataset v1 |
 | 3 | `mcpcensus suggest` feedback loop *(done)* | sensor network self-feeds |
