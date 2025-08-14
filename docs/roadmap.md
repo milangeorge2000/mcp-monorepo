@@ -1,17 +1,17 @@
 # mcp-monorepo · roadmap & concepts
 
-The shipped axes (Context, Security, Red team) solve point-in-time questions
-about a single machine. The concepts below escalate the suite in three
-directions: a **data network** (mcpcensus), **accountability** (ledger), and
-**economics** (agentspense). All inherit the house rules: plug-and-play,
-stdlib-only, deterministic, report-card artifacts,
+The shipped axes (Context, Security, Red team, Client bench) solve
+point-in-time questions about a single machine. The concepts below escalate
+the suite in three directions: a **data network** (mcpcensus),
+**accountability** (ledger), and **economics** (agentspense). All inherit the
+house rules: plug-and-play, stdlib-only, deterministic, report-card artifacts,
 findings-as-review-triggers.
 
 **Status:** `mcpcensus/`, `ledger/`, `agentspense/` are implemented as
 first-class monorepo members — each with tests and a CLI. **mcphazard** ships
-too: an active red-team harness that fuzzes `tools/call` in a sandbox. The
-table below marks the shipped surface and what remains "phase 2" of each
-concept.
+too: an active red-team harness that fuzzes `tools/call` in a sandbox.
+**mcpbench** ships as the newest axis: a client benchmark. The table below
+marks the shipped surface and what remains "phase 2" of each concept.
 
 ---
 
@@ -44,6 +44,39 @@ harness + pentest-style HTML/JSON report, a `--share` hazard fingerprint
 **Phase 2.** A conformance/canary corpus of known-real vulnerabilities, corpus
 regression tracking ("this newly shipped server still passes"), and hardware
 batching to cut scan wall-time.
+
+---
+
+## mcpbench — the client benchmark *(benchmark the clients, not the servers)*
+
+**The problem.** Every axis so far scores the *server*: how much context it
+costs, what it can reach, how it reacts to attack. But an MCP stack's failures
+usually live on the other side of the wire — a client that ignores the
+`-32001` policy gate, misbuilds arguments, never notices the toolset changed,
+or burns tokens re-listing a static schema. There is no deterministic way to
+say "this client holds up its end of the protocol."
+
+**The concept.** Fix the server and benchmark the *clients*. `mcpbench`
+runs a battery of **deterministic driver profiles** (canonical, naive,
+chatty, careless) against one fixed, sandboxed reference fleet with a strict
+policy gate and a deliberate mid-run **tool drift** (`tools/list_changed`).
+The transcript is scored on five axes — conformance, policy, validity,
+token economy, drift handling — into an A‑F report card, no LLM in the loop.
+
+**Safety model.** Sandbox-only by design: the reference fleet is bundled,
+runs in a scrubbed subprocess, and `mcpbench` refuses to talk to real hosts.
+The fleet's policy gate stands in for a real server's enforcement so the
+benchmark measures the *client's* behavior against it.
+
+**Shipped (this repo).** `mcpbench/`: deterministic driver archetypes,
+scrubbed subprocess sandbox, a bundled reference fleet with schema
+validation + policy gates + drift, transcript scoring, a leaderboard
+HTML/JSON report, a `--share` fingerprint (`sensor=bench`) for the census
+network, and CLI subsetting (`--drivers naive,canonical`).
+
+**Phase 2.** Real-client adapters (run your actual client binary through the
+same battery), a drift corpus of real server change events, and regression
+tracking across client versions.
 
 ---
 
@@ -165,6 +198,7 @@ the budget.
 |---|---|---|
 | 0 | `mcpaudit` / `mcpguard` shipped | — |
 | 0b | `mcphazard` red-team harness *(done)* | attack tested before you trust |
+| 0c | `mcpbench` client benchmark *(done)* | clients measured against the wire |
 | 1 | `--share` sensors + registry + `mcpcensus` engine *(done)* | private beta |
 | 2 | first public *State of MCP* report | public dataset v1 |
 | 3 | `mcpcensus suggest` feedback loop *(done)* | sensor network self-feeds |
