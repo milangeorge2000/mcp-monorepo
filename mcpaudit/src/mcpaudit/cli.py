@@ -70,6 +70,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--timeout", type=float, default=10.0, help="Per-server MCP timeout in seconds (default 10)")
     parser.add_argument("--report", metavar="PATH", help="Write report.html to PATH (default: mcpaudit-report.html in current dir)")
     parser.add_argument("--json", action="store_true", help="Print machine-readable JSON summary to stdout instead of opening HTML")
+    parser.add_argument("--share", metavar="PATH", help="Write an anonymized mcpcensus fingerprint to PATH (e.g. ~/.mcpcensus/mcpaudit-census.json) instead of html/json")
     args = parser.parse_args(argv)
 
     report = run(
@@ -103,6 +104,16 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.json:
         _print_json(result)
+        return 0
+
+    if args.share:
+        try:
+            from mcpaudit.share import emit_context_fingerprint
+        except ImportError:  # pragma: no cover
+            print("mcpaudit: --share needs mcpaudit.share; reinstall the package", file=sys.stderr)
+            return 2
+        path = emit_context_fingerprint(result, args.share)
+        print(f"Wrote census fingerprint {path} · nothing sensitive leaves this file — only salted hashes")
         return 0
 
     try:

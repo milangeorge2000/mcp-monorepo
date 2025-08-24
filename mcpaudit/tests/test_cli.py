@@ -7,6 +7,21 @@ from conftest import FIXTURES
 DEMO = str(Path(FIXTURES.parent.parent) / "examples" / "demo-mcp.json")
 
 
+def test_cli_share_writes_anonymized_fingerprint(tmp_path):
+    from mcpaudit.cli import main
+
+    out = tmp_path / "census.json"
+    rc = main(["--config", DEMO, "--window", "9999", "--share", str(out)])
+    assert rc == 0
+    fp = json.loads(out.read_text(encoding="utf-8"))
+    assert fp["format"] == "mcpcensus/v1"
+    assert fp["sensor"] == "context"
+    assert fp["device"]
+    assert fp["axes"]["server_count"] >= 0
+    # raw server names must stay off the file
+    assert "github" not in out.read_text(encoding="utf-8")
+
+
 def test_cli_json_report(monkeypatch):
     from mcpaudit.cli import main
 
