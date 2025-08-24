@@ -85,6 +85,15 @@ def cmd_scan(args) -> int:
     if args.json:
         _print_json(_summary_dict(report))
         return 0
+    if args.share:
+        try:
+            from mcpguard.share import emit_security_fingerprint
+        except ImportError:  # pragma: no cover
+            print("mcpguard: --share needs mcpguard.share; reinstall the package", file=sys.stderr)
+            return 2
+        path = emit_security_fingerprint(_summary_dict(report), args.share)
+        print(f"Wrote census fingerprint {path} · nothing sensitive leaves this file — only salted hashes")
+        return 0
 
     html = render_html(report, report.source_configs)
     path = args.report or _cwd_report_path()
@@ -190,6 +199,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     p_scan.add_argument("--report", metavar="PATH")
     p_scan.add_argument("--no-live", action="store_true", help="skip the live tools/list handshake")
     p_scan.add_argument("--json", action="store_true")
+    p_scan.add_argument("--share", metavar="PATH", help="write an anonymized mcpcensus fingerprint to PATH instead of html/json")
 
     p_watch = sub.add_parser("watch", help="scan and alert on newly-introduced critical findings")
     p_watch.set_defaults(func=cmd_watch)

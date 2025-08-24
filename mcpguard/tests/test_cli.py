@@ -47,6 +47,19 @@ def test_scan_writes_report_stubs_browser(monkeypatch, tmp_path):
     assert calls.get("opened") == str(rp)
 
 
+def test_scan_share_writes_anonymized_fingerprint(tmp_path):
+    out = tmp_path / "census.json"
+    rc = main(["scan", "--config", str(FIXTURES / "mcp.json"), "--no-live", "--share", str(out)])
+    assert rc == 0
+    fp = json.loads(out.read_text(encoding="utf-8"))
+    assert fp["format"] == "mcpcensus/v1"
+    assert fp["sensor"] == "security"
+    assert fp["device"]
+    raw = out.read_text(encoding="utf-8")
+    for leaked in ("github", "public-relay", "AWS"):
+        assert leaked not in raw
+
+
 def test_watch_stable_on_fixture(tmp_path, capsys):
     rc1 = _with_state(tmp_path, ["watch", "--config", str(FIXTURES / "mcp.json"), "--no-live", "--json"])
     assert rc1 in (0, 3)
