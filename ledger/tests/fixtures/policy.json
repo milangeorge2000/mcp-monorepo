@@ -1,0 +1,11 @@
+{
+  "deny": [
+    {"tool": "shell_write"},
+    {"tool": "Bash", "input_has": "rm -rf"},
+    {"file_pattern": "*.secret"}
+  ],
+  "require_human_approval": ["*deploy*", "GitTool_push"],
+  "allow": [{"tool": "Read"}],
+  "budget_tokens_in": 500000,
+  "max_cost_usd": 5.0
+}
