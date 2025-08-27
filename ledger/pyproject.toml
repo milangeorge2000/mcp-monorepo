@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp-ledger"
+version = "0.1.0"
+description = "Agent action forensics: turn session transcripts into an auditable, replayable trail of what the agent did — and gate it against policy."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "mcp-monorepo contributors" }]
+keywords = ["mcp", "forensics", "transcript", "audit-logs", "policy", "agents"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: System :: Logging",
+]
+
+[project.urls]
+Homepage = "https://github.com/milangeorge2000/mcp-monorepo#ledger"
+Issues = "https://github.com/milangeorge2000/mcp-monorepo/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+ledger = "ledger.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+ledger = ["**/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
