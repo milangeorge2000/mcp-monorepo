@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentspense"
+version = "0.1.0"
+description = "Agent cost intelligence: normalize spend exports from every AI coding provider into one accountable ledger with routing, attribution, and spike alerts."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "mcp-monorepo contributors" }]
+keywords = ["mcp", "agents", "cost", "spend", "finops", "rate-card", "p-l"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Office/Business :: Financial",
+]
+
+[project.urls]
+Homepage = "https://github.com/milangeorge2000/mcp-monorepo#agentspense"
+Issues = "https://github.com/milangeorge2000/mcp-monorepo/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+agentspense = "agentspense.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+agentspense = ["rates/*.json", "**/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
