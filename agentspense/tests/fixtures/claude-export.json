@@ -1,0 +1,6 @@
+{
+  "api_requests": [
+    {"ts":"2025-08-05T10:00:00Z","model":"claude-3-5-sonnet","tokens_in":120000,"tokens_out":18000,"cost_usd":0.63,"session_id":"login-flake","team":"platform","feature":"auth","tags":["team:platform","feature:auth"]},
+    {"ts":"2025-08-06T10:00:00Z","model":"claude-opus-4.5","tokens_in":240000,"tokens_out":60000,"cost_usd":2.70,"session_id":"checkout-redesign","team":"checkout","feature":"redesign","tags":["team:checkout","feature:redesign"]}
+  ]
+}

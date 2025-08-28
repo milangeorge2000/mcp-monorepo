@@ -1,0 +1,4 @@
+[
+  {"date":"2025-08-07","model":"gpt-4.1","tokens_in":80000,"tokens_out":20000,"cost":0.32,"session_id":"cursor-1","tags":["team:platform","feature:docs"]},
+  {"date":"2025-08-08","model":"cursor-small","tokens_in":60000,"tokens_out":15000,"cost":0.05,"session_id":"cursor-2","tags":["team:checkout"]}
+]

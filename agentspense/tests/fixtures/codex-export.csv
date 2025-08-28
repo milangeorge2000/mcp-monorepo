@@ -1,0 +1,3 @@
+when,provider,model,tokens_in,tokens_out,cost_usd,team,session
+2025-08-10T00:00:00Z,codex,gpt-5-codex,90000,30000,0.4125,platform,sess-codex-a
+2025-08-11T00:00:00Z,codex,gpt-4.1-codex,5000,2000,0.026,checkout,login-flake
