@@ -13,8 +13,13 @@ treats findings as **review triggers**, never verdicts.
 |---|---|---|---|
 | **Context** | [`mcpaudit/`](mcpaudit/) | how many tokens do my tool schemas burn per request, and which tools are dead? | report.html + slimmed `mcp.json` |
 | **Security** | [`mcpguard/`](mcpguard/) | what can these servers touch — risky launchers, dangerous tools, credential env, known-bad packages? | report.html + hardened `mcp.json` |
+| **Data** | `mcpcensus` _roadmap_ | what does the MCP ecosystem really look like, measured on real devices? | State of MCP report + leaderboards |
+| **Accountability** | `ledger` _roadmap_ | what did the agent actually do, in what order, at what cost? | incident dossier / Bill of Actions |
+| **Economics** | `agentspense` _roadmap_ | what do agents cost per team, per PR, per resolved issue? | monthly agent P&L |
 | Reliability | _roadmap_ | do my servers stay up and answer `tools/list` consistently? | uptime / replay corpus |
 | Compliance | _roadmap_ | EU-AI-Act proportionality, model-usage policies | regulatory report |
+
+Full concept notes: [`docs/roadmap.md`](docs/roadmap.md).
 
 ## The pitch
 
