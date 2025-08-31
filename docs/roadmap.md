@@ -6,6 +6,10 @@ single machine. The concepts below escalate the suite in three directions: a
 (agentspense). All three inherit the house rules: plug-and-play, stdlib-only,
 deterministic, report-card artifacts, findings-as-review-triggers.
 
+**Status:** all three are now implemented as first-class monorepo members —
+`mcpcensus/`, `ledger/`, `agentspense/` — each with tests and a CLI. The table
+below marks the shipped surface and what remains "phase 2" of each concept.
+
 ---
 
 ## mcpcensus — the MCP Observatory *(flagship)*
@@ -52,6 +56,17 @@ credible public corpus becomes the reference dataset — the `CVE`/`npmsecurity`
 position of the MCP era. Longitudinally compounding: every additional device
 raises the value of the whole.
 
+**Shipped (this repo).** `mcpcensus/`: sensor flags on both tools
+(`mcpaudit --share`, `mcpguard scan --share`), fingerprint builders around a
+single public format, a JSONL registry, full publishing pipeline (bucket →
+k-anonymize → Laplace noise → `published.json`), a stdlib HTTP reference
+server (`POST /ingest`, `GET /published`, `GET /report`), the State-of-MCP
+HTML report, and the `suggest` percentile feedback loop.
+
+**Phase 2.** A hosted public deployment of the reference server, signed
+dataset releases, per-package trendline API, and the one-page PDF report
+format.
+
 ---
 
 ## ledger — agent action forensics *(accountability)*
@@ -72,6 +87,14 @@ allow").
 attribution of picks/rejections; SBOM-style "Bill of Actions" export; policy
 gates ("no run touches `prod/db/` without a human signature").
 
+**Shipped (this repo).** `ledger/`: transcript → replayable trail
+(`claude-code` JSONL or generic rows), incident dossier HTML, behavior
+diff between attempts, and a `policy.json` gate (deny by tool/file/input,
+`require_human_approval`, budgets) with a CI-friendly exit code.
+
+**Phase 2.** Streaming capture from live clients (no post-hoc replays), tool
+trace graphs, and sandbox replay of a recorded trail.
+
 **Why it's needed.** Org adoption of autonomous agents is gated on *can we
 audit what it did*. This turns "trust the agent" into "verify the agent".
 
@@ -87,8 +110,17 @@ self-hosted gateways into a single ledger with a rate-card normalization
 engine. Answer: spend by team/feature-ticket, $/merged-PR, $/resolved-issue,
 spike anomaly alerts, and a monthly one-page **agent P&L**.
 
+**Shipped (this repo).** `agentspense/`: provider exporters (claude, cursor,
+codex, opencode, generic rows, csv/tsv) folded into one ledger, bundled +
+overridable rate card, team/feature attribution, z-score + session spend-spike
+alerts (`agentspense alerts` exits nonzero), and the monthly agent P&L HTML.
+
+**Phase 2.** Jira/GitHub integration for `$/merged-PR`, `$/resolved-issue`,
+scheduled report delivery, and Copilot/self-hosted gateway exporters.
+
 **Why it's needed.** The question the org can't answer today ("is this
-cohort of agents worth what it costs?") is the question keep up the budget.
+cohort of agents worth what it costs?") is the question that keeps (or cuts)
+the budget.
 
 ---
 
@@ -96,12 +128,13 @@ cohort of agents worth what it costs?") is the question keep up the budget.
 
 | phase | deliverable | milestone |
 |---|---|---|
-| 0 | `mcpaudit` / `mcpguard` shipped (done) | — |
-| 1 | `--share` flag + registry + private cohort | mcpcensus private beta |
+| 0 | `mcpaudit` / `mcpguard` shipped | — |
+| 1 | `--share` sensors + registry + `mcpcensus` engine *(done)* | private beta |
 | 2 | first public *State of MCP* report | public dataset v1 |
-| 3 | `mcpcensus suggest` feedback loop | sensor network self-feeds |
-| 4 | `ledger` trail recording on both clients | incident dossiers |
-| 5 | `agentspense` rate-card normalization | monthly agent P&L |
+| 3 | `mcpcensus suggest` feedback loop *(done)* | sensor network self-feeds |
+| 4 | `ledger` trail recording + dossier + policy gate *(done)* | incident dossiers |
+| 5 | `agentspense` rate-card normalization + agent P&L *(done)* | monthly agent P&L |
+| 6 | Reliability / Compliance axes | suite complete |
 
 The order matters: the Observatory lands first because it converts the existing
 suite into an irreplaceable data asset before any single feature can be
