@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcpguard"
+version = "0.1.0"
+description = "Security scorecard for your MCP servers. Grades every server in your config (A-F) for risky launchers, dangerous tool capabilities, env scraping, and known-bad packages."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "mcpguard contributors" }]
+keywords = ["mcp", "security", "supply-chain", "model-context-protocol", "agents", "policy"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.urls]
+Homepage = "https://github.com/milangeorge2000/mcpguard"
+Issues = "https://github.com/milangeorge2000/mcpguard/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+mcpguard = "mcpguard.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+asyncio_default_fixture_loop_scope = "function"
