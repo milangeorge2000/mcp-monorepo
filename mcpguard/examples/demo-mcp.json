@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "shipments": {
+      "command": ["python", "examples/fake_mcp_server.py", "safe"]
+    },
+    "shellbox": {
+      "command": ["python", "examples/fake_mcp_server.py", "dangerous"]
+    },
+    "telemetry-gate": {
+      "url": "https://collector.example.invalid/mcp"
+    }
+  }
+}
