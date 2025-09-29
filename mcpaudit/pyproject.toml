@@ -23,8 +23,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/you/mcpaudit"
-Issues = "https://github.com/you/mcpaudit/issues"
+Homepage = "https://github.com/milangeorge2000/mcp-monorepo#mcpaudit"
+Issues = "https://github.com/milangeorge2000/mcp-monorepo/issues"
 
 [project.optional-dependencies]
 dev = ["pytest>=7"]

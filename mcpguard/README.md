@@ -94,10 +94,10 @@ owns that measurement layer.
 
 ## Development
 
-mcpguard lives in the mcpaudit monorepo:
+mcpguard lives in the mcp-monorepo health kit:
 
 ```bash
-git clone https://github.com/milangeorge2000/mcpaudit.git
+git clone https://github.com/milangeorge2000/mcp-monorepo.git
 cd mcpaudit/mcpguard
 pip install -e .[dev]
 pytest

@@ -1,131 +1,74 @@
-# mcpaudit
+# mcp-monorepo · the MCP Health Kit
 
-**The report card for your agent's MCP context diet.**
+Agent workstations now run a stack of MCP servers with **zero operational
+data** — nobody knows how much context they burn per prompt, what they can
+reach, or whether the code they pulled at startup is worth trusting.
 
-Every MCP server you configure gets its entire `tools/list` schema injected
-into your agent's context window on every single turn — before any work
-happens. Most servers are used for a **fraction** of what they expose, and old
-servers quietly keep costing you tokens forever.
+`mcp-monorepo` is a small suite of standalone diagnostics — one per axis of MCP
+health — that scan your configs, measure the thing, and hand you a *shareable
+report card*. Each tool is plug-and-play, stdlib-only, deterministic, and
+treats findings as **review triggers**, never verdicts.
 
-`mcpaudit` scans your MCP configs, talks to each server, weighs the tool
-schemas in tokens, cross-references how often each tool was **actually called**
-in your recent session transcripts, and hands you a shareable `report.html`
-with a hard grade — plus a slimmed `mcp.json` you can apply in seconds.
+| axis | tool | question it answers | artifact |
+|---|---|---|---|
+| **Context** | [`mcpaudit/`](mcpaudit/) | how many tokens do my tool schemas burn per request, and which tools are dead? | report.html + slimmed `mcp.json` |
+| **Security** | [`mcpguard/`](mcpguard/) | what can these servers touch — risky launchers, dangerous tools, credential env, known-bad packages? | report.html + hardened `mcp.json` |
+| Reliability | _roadmap_ | do my servers stay up and answer `tools/list` consistently? | uptime / replay corpus |
+| Compliance | _roadmap_ | EU-AI-Act proportionality, model-usage policies | regulatory report |
 
-- **10-second scan.** One command, no changes to your setup.
-- **Per-server waste.** Exact token cost each server contributes *per request*.
-- **Dead-tool detection.** Tools exposed but never called in the last 30 days.
-- **Slim config export.** The config that keeps your toolset lean.
-- **$ / monthly cost framing.** Token waste you're paying for on every reply.
+## The pitch
+
+```
+npx -y some-mcp-package        # you just ran remote code, unbounded
+mcpaudit                       # ...how much context is that costing?
+mcpguard                       # ...and what can it actually touch?
+```
+
+Two scorecards, one habit: **audit before you trust, guard before you scale.**
+The report card (`A–F`) is the shareable artifact — teams post them, budgets
+get renegotiated, and risky servers get dropped before they drop data.
+
+## House rules
+
+- **Plug-and-play:** `pipx install <tool>` then run it in your repo.
+- **No runtime deps:** Python stdlib only — installs into any agent dev box.
+- **Deterministic:** same config, same numbers.
+- **Honest output:** every figure is an estimate; every finding a review
+  trigger, never a conviction.
 
 ## Quick start
 
 ```bash
-pipx install mcpaudit        # or: uv tool install mcpaudit
-mcpaudit
+# context diet
+pipx install mcpaudit && mcpaudit
+
+# security scorecard
+pipx install mcpguard && mcpguard scan
 ```
 
-The tool auto-discovers:
+Both auto-discover Claude Code / Cursor / opencode MCP configs and write a
+report in the current directory.
 
-- `.mcp.json` in the current project (Claude Code project scope)
-- `~/.claude.json` (Claude Code user scope)
-- `~/.cursor/mcp.json`, `.cursor/mcp.json` (Cursor)
-- `~/.config/opencode/opencode.json`, `opencode.json[c]` (opencode)
+## Layout
 
-Pass an explicit config if you keep one elsewhere:
+```
+mcp-monorepo/
+├── mcpaudit/     # context report card (token waste, dead tools, slim config)
+├── mcpguard/     # security scorecard (launchers, capabilities, intel, hardened config)
+├── LICENSE       # MIT, shared by all tools
+```
+
+## Contributing
+
+Each tool is self-contained in its subfolder with its own tests:
 
 ```bash
-mcpaudit --config ~/dotfiles/mcp.json
+pip install -e mcpaudit/[dev]
+pytest mcpaudit/
+
+pip install -e mcpguard/[dev]
+pytest mcpguard/
 ```
-
-`mcpaudit` writes `mcpaudit-report.html` in the current directory and opens it.
-For CI or scripting use `--json`:
-
-```bash
-mcpaudit --json | jq .grade
-```
-
-## What you get
-
-A single-page report card with:
-
-| Metric | What it means |
-|---|---|
-| **Grade** | A–F from your waste percentage |
-| **Schema waste** | % of schema tokens never referenced by any call |
-| **Baseline / request** | tokens every server injects on every turn |
-| **Dead tools** | exposed but unused in the window |
-| **Slim config** | ready-to-paste `mcpServers` subset |
-
-All figures are labeled **estimates** — the point is the *relative* picture,
-not a billing-grade audit.
-
-## How it works
-
-```
-mcp.json ──► config discovery ──► per-server stdio handshake ──► tools/list
-                                      │
-session transcripts ◄─── usage probe  │ (JSON-RPC, initialize → tools/list)
-                                      ▼
-                weigh schemas (compact JSON token estimate)
-                                      ▼
-        render report.html + slim mcp.json (dead tools elided)
-```
-
-### Why this matters (research notes)
-
-- MCP server definitions consume a large share of baseline context before any
-  work happens; tool-selection accuracy collapses as catalogs grow
-  (43% → <14% reported at scale)· At integration scale, standalone diagnosis is
-  still unowned — compression and gateway tooling exists (Headroom, Bifrost,
-  Atlassian), but nobody ships a plain "what am I wasting" scanner.
-- Real-world reports: token waste as high as ~90% of input during tool-heavy
-  work; consolidating unused toolsets cut tens of thousands of tokens per
-  request.
-
-`mcpaudit` is that missing measurement layer: it tells you **what** to cut, in
-numbers, before you touch anything.
-
-## CLI
-
-```
-usage: mcpaudit [--config PATH] [--context N] [--window N] [--timeout SEC]
-                [--report PATH] [--json] [--version]
-```
-
-| flag | default | meaning |
-|---|---|---|
-| `--config PATH` | auto | explicit MCP config file |
-| `--context N` | 200000 | context window for footprint % |
-| `--window N` | 30 | usage window in days |
-| `--timeout SEC` | 10 | per-server MCP stdio timeout |
-| `--report PATH` | `mcpaudit-report.html` | output path |
-| `--json` | off | machine-readable summary to stdout |
-
-Exit codes: `0` ok, `2` no config found.
-
-## Development
-
-```bash
-git clone https://github.com/you/mcpaudit.git
-cd mcpaudit
-pip install -e .[dev]
-pytest
-```
-
-Try it against the bundled demo server:
-
-```bash
-python examples/fake_mcp_server.py          # terminal 1
-mcpaudit --config examples/demo-mcp.json    # terminal 2
-```
-
-## Roadmap
-
-- [ ] GitHub Actions badge (`mcpaudit --json` in CI)
-- [ ] Slack report posting
-- [ ] OpenTelemetry metrics
-- [ ] EU-AI-Act §proportionality report template
 
 ## License
 
