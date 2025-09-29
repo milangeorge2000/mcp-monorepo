@@ -17,6 +17,7 @@ def test_live_measure_fake_server():
     assert len(servers) == 1
     (server,) = servers
     assert server.name == "shipments"
+    server.command = ["python", FAKE_SERVER]  # resolve demo's relative path
 
     measurements = measure_servers(servers, timeout=15.0)
     m = measurements[0]
