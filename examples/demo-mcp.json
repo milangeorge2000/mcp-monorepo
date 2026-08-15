@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "shipments": {
+      "command": ["python", "examples/fake_mcp_server.py"]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": { "GITHUB_TOKEN": "ghp_placeholder" }
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem"]
+    },
+    "postgres": {
+      "commandPath": "/home/user/bin/mcp-postgres",
+      "args": ["--dsn", "postgres://localhost/mydb"]
+    },
+    "disabled-server": {
+      "command": "npx",
+      "args": ["-y", "some/package"],
+      "enabled": false
+    },
+    "no-command": {
+      "env": { "THING": "x" }
+    }
+  }
+}
